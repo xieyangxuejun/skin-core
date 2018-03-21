@@ -2,6 +2,10 @@ package com.foretree.skin
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.res.AssetManager
+import android.content.res.Resources
+import java.lang.Exception
+
 
 /**
  * Created by silen on 20/03/2018.
@@ -9,10 +13,30 @@ import android.app.Application
 
 @SuppressLint("StaticFieldLeak")
 object SkinManager {
-    private var mApp: Application? = null
+    private lateinit var mApp: Application
 
     fun init(application: Application) {
         mApp = application
-        mApp?.registerActivityLifecycleCallbacks(SkinActivityLifecycle(ActivityLifecycleDelegateImpl()))
+        mApp.registerActivityLifecycleCallbacks(SkinActivityLifecycle(ActivityLifecycleDelegateImpl()))
+    }
+
+    fun loadSkin(path: String) {
+        if (path.isEmpty()) {
+            SkinResources.getInstance(mApp.applicationContext).reset()
+            SkinSharePreference.getInstance(mApp.applicationContext).setSkin("")
+        } else {
+            try {
+                val assetManager = AssetManager::class.java.newInstance()
+                val method = assetManager.javaClass.getMethod("addAssetPath", String::class.java)
+                method.isAccessible = true
+                method.invoke(assetManager, path)
+
+                val resources = mApp.resources
+                val skinResources = Resources(assetManager,resources.displayMetrics, resources.configuration)
+
+            } catch (e: Exception) {
+            }
+
+        }
     }
 }
