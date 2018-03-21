@@ -2,6 +2,7 @@ package com.foretree.skin
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.content.res.Resources
 import java.lang.Exception
@@ -34,7 +35,14 @@ object SkinManager {
                 val resources = mApp.resources
                 val skinResources = Resources(assetManager,resources.displayMetrics, resources.configuration)
 
+                val packageName = mApp.packageManager.getPackageArchiveInfo(path,
+                        PackageManager.GET_ACTIVITIES).packageName
+                SkinResources.getInstance(mApp.applicationContext).applySkin(skinResources,
+                        packageName)
+                SkinSharePreference.getInstance(mApp.applicationContext).setSkin(path)
+
             } catch (e: Exception) {
+                e.printStackTrace()
             }
 
         }

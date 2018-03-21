@@ -12,7 +12,7 @@ class SkinResources private constructor(context: Context) {
     private lateinit var mSkinResources: Resources
 
     private var mAppResources: Resources = context.resources
-    private lateinit var mSkinPacketName: String
+    private lateinit var mSkinPackageName: String
     private var defaultSkin = true
 
     companion object {
@@ -23,6 +23,11 @@ class SkinResources private constructor(context: Context) {
                 mInstance = SkinResources(context)
             return mInstance
         }
+    }
+
+    fun applySkin(resources: Resources, packageName: String) {
+        this.mSkinResources = resources
+        this.mSkinPackageName = packageName
     }
 
     fun getBackground(resId: Int): Any {
@@ -60,14 +65,14 @@ class SkinResources private constructor(context: Context) {
 
         val entryName = mAppResources.getResourceEntryName(resId)
         val typeName = mAppResources.getResourceTypeName(resId)
-        return mSkinResources.getIdentifier(entryName, typeName, mSkinPacketName)
+        return mSkinResources.getIdentifier(entryName, typeName, mSkinPackageName)
     }
 
     fun reset() {
         defaultSkin = true
         mAppResources = null!!
         mSkinResources = null!!
-        mSkinPacketName = ""
+        mSkinPackageName = ""
     }
 
 }
