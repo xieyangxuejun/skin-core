@@ -14,10 +14,10 @@ class SkinSharePreference private constructor(context: Context) {
     companion object {
         private lateinit var mInstance: SkinSharePreference
 
-        fun getInstance(context: Context): SkinSharePreference {
-            if (mInstance == null)
-                mInstance = SkinSharePreference(context)
-            return mInstance
+        fun getInstance(): SkinSharePreference = mInstance
+
+        fun init(context: Context) {
+            mInstance = SkinSharePreference(context)
         }
     }
 

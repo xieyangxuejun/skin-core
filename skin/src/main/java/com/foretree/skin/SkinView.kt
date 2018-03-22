@@ -1,6 +1,5 @@
 package com.foretree.skin
 
-import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -14,14 +13,13 @@ import android.widget.TextView
  */
 class SkinView(var view: View, var skinPairs: ArrayList<SkinPair>) {
 
-    fun applySkin(context: Context?) {
-        if (context == null) return
+    fun applySkin() {
         var skinDrawable: SkinDrawable? = null
         skinPairs.forEach {
             when (AttrType.valueOf(it.attributeName)) {
                 AttrType.background -> {
                     SkinResources
-                            .getInstance(context)
+                            .getInstance()
                             .getBackground(it.resId)
                             .let {
                                 if (it is Int) {
@@ -33,7 +31,7 @@ class SkinView(var view: View, var skinPairs: ArrayList<SkinPair>) {
                 }
                 AttrType.src -> {
                     SkinResources
-                            .getInstance(context)
+                            .getInstance()
                             .getBackground(it.resId)
                             .let {
                                 if (view !is ImageView) return
@@ -46,15 +44,15 @@ class SkinView(var view: View, var skinPairs: ArrayList<SkinPair>) {
                 }
                 AttrType.textColor -> {
                     SkinResources
-                            .getInstance(context)
-                            .getColorStateList(resId = it.resId)
+                            .getInstance()
+                            .getColor(it.resId)
                             .let {
                                 (view as TextView).setTextColor(it)
                             }
                 }
                 AttrType.drawableLeft -> {
                     SkinResources
-                            .getInstance(context)
+                            .getInstance()
                             .getDrawable(it.resId)
                             .let {
                                 skinDrawable = SkinDrawable(it, null, null, null)
@@ -62,7 +60,7 @@ class SkinView(var view: View, var skinPairs: ArrayList<SkinPair>) {
                 }
                 AttrType.drawableRight -> {
                     SkinResources
-                            .getInstance(context)
+                            .getInstance()
                             .getDrawable(it.resId)
                             .let {
                                 skinDrawable = SkinDrawable(null, it, null, null)
@@ -71,7 +69,7 @@ class SkinView(var view: View, var skinPairs: ArrayList<SkinPair>) {
                 }
                 AttrType.drawableTop -> {
                     SkinResources
-                            .getInstance(context)
+                            .getInstance()
                             .getDrawable(it.resId)
                             .let {
                                 skinDrawable = SkinDrawable(null, null, it, null)
@@ -80,7 +78,7 @@ class SkinView(var view: View, var skinPairs: ArrayList<SkinPair>) {
                 }
                 AttrType.drawableBottom -> {
                     SkinResources
-                            .getInstance(context)
+                            .getInstance()
                             .getDrawable(it.resId)
                             .let {
                                 skinDrawable = SkinDrawable(null, null, null, it)

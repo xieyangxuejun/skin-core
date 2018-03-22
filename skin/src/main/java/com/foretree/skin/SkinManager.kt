@@ -5,7 +5,9 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.content.res.Resources
+import android.text.TextUtils
 import java.lang.Exception
+import java.util.*
 
 
 /**
@@ -13,18 +15,21 @@ import java.lang.Exception
  */
 
 @SuppressLint("StaticFieldLeak")
-object SkinManager {
+object SkinManager : Observable() {
     private lateinit var mApp: Application
 
     fun init(application: Application) {
         mApp = application
+        SkinResources.init(mApp.applicationContext)
+        SkinSharePreference.init(mApp.applicationContext)
         mApp.registerActivityLifecycleCallbacks(SkinActivityLifecycle(ActivityLifecycleDelegateImpl()))
+        loadSkin(SkinSharePreference.getInstance().getSkin())
     }
 
-    fun loadSkin(path: String) {
-        if (path.isEmpty()) {
-            SkinResources.getInstance(mApp.applicationContext).reset()
-            SkinSharePreference.getInstance(mApp.applicationContext).setSkin("")
+    fun loadSkin(path: String?) {
+        if (TextUtils.isEmpty(path)) {
+            SkinResources.getInstance().reset()
+            SkinSharePreference.getInstance().setSkin("")
         } else {
             try {
                 val assetManager = AssetManager::class.java.newInstance()
@@ -37,14 +42,16 @@ object SkinManager {
 
                 val packageName = mApp.packageManager.getPackageArchiveInfo(path,
                         PackageManager.GET_ACTIVITIES).packageName
-                SkinResources.getInstance(mApp.applicationContext).applySkin(skinResources,
+                SkinResources.getInstance().applySkin(skinResources,
                         packageName)
-                SkinSharePreference.getInstance(mApp.applicationContext).setSkin(path)
+                SkinSharePreference.getInstance().setSkin(path!!)
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
+        setChanged()
+        notifyObservers()
+
     }
 }

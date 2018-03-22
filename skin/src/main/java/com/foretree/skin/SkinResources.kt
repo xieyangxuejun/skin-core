@@ -18,14 +18,15 @@ class SkinResources private constructor(context: Context) {
     companion object {
         private lateinit var mInstance: SkinResources
 
-        fun getInstance(context: Context): SkinResources {
-            if (mInstance == null)
-                mInstance = SkinResources(context)
-            return mInstance
+        fun getInstance(): SkinResources = mInstance
+
+        fun init(context: Context) {
+            mInstance = SkinResources(context)
         }
     }
 
     fun applySkin(resources: Resources, packageName: String) {
+        defaultSkin = false
         this.mSkinResources = resources
         this.mSkinPackageName = packageName
     }
@@ -33,10 +34,10 @@ class SkinResources private constructor(context: Context) {
     fun getBackground(resId: Int): Any {
         mAppResources.getResourceTypeName(resId)
                 .let {
-                    if (it.contains("color")) {
-                        return getColor(resId)
+                    return if (it.contains("color")) {
+                        getColor(resId)
                     } else {
-                        return getDrawable(resId)
+                        getDrawable(resId)
                     }
                 }
 
@@ -54,7 +55,7 @@ class SkinResources private constructor(context: Context) {
         return mSkinResources.getDrawable(skinId)
     }
 
-    private fun getColor(resId: Int): Int {
+    fun getColor(resId: Int): Int {
         val skinId: Int = getIdentifierId(resId)
         if (skinId == 0 || defaultSkin) return mAppResources.getColor(skinId)
         return mSkinResources.getColor(skinId)
@@ -70,8 +71,6 @@ class SkinResources private constructor(context: Context) {
 
     fun reset() {
         defaultSkin = true
-        mAppResources = null!!
-        mSkinResources = null!!
         mSkinPackageName = ""
     }
 

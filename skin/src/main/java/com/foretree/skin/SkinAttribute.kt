@@ -1,7 +1,7 @@
 package com.foretree.skin
 
-import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 
@@ -22,7 +22,7 @@ class SkinAttribute {
 
     private val mSkinViews = arrayListOf<SkinView>()
 
-    fun loadAttr(context: Context?, view: View?, attrs: AttributeSet?) {
+    fun load(view: View?, attrs: AttributeSet?) {
         val skinPairs = arrayListOf<SkinPair>()
 
         var index = 0
@@ -43,21 +43,26 @@ class SkinAttribute {
                         resId = attributeValue.substring(1).toInt()
                     }
                 }
-                resId.let {
-                    if (it != 0) {
-                        val skinPair = SkinPair(attributeName, it)
-                        skinPairs.add(skinPair)
-                    }
+                if (resId != 0) {
+                    val skinPair = SkinPair(attributeName, resId)
+                    skinPairs.add(skinPair)
                 }
             }
-
-            if (skinPairs.isNotEmpty() && view is TextView) {
-                val skinView = SkinView(view, skinPairs)
-                skinView.applySkin(context)
-                mSkinViews.add(skinView)
-            }
-
             index++
+        }
+
+
+        if (view != null && skinPairs.isNotEmpty() || view is TextView) {
+            val skinView = SkinView(view, skinPairs)
+            skinView.applySkin()
+            mSkinViews.add(skinView)
+            Log.d("skin==>", "add view => ${skinView::class.java}")
+        }
+    }
+
+    fun applySkin() {
+        mSkinViews.forEach {
+            it.applySkin()
         }
     }
 }

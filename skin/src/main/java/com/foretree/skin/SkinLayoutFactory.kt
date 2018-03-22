@@ -7,12 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import java.lang.Exception
 import java.lang.reflect.Constructor
+import java.util.*
 
 /**
  * Created by silen on 20/03/2018.
  */
-class SkinLayoutFactory(private var activity: Activity,
-                        private val skinAttribute: SkinAttribute = SkinAttribute()) : LayoutInflater.Factory2 {
+class SkinLayoutFactory(private var activity: Activity) : LayoutInflater.Factory2, Observer {
+    private val skinAttribute: SkinAttribute = SkinAttribute()
+
+    override fun update(o: Observable?, arg: Any?) {
+        skinAttribute.applySkin()
+    }
 
     private val mClassPrefixList = arrayOf(
             "android.widget.",
@@ -25,23 +30,25 @@ class SkinLayoutFactory(private var activity: Activity,
 
     override fun onCreateView(name: String?, context: Context?, attrs: AttributeSet?): View? = null
 
-    override fun onCreateView(parent: View?, name: String?, context: Context?, attrs: AttributeSet?): View {
+    override fun onCreateView(parent: View?, name: String?, context: Context?, attrs: AttributeSet?): View? {
         //android view
-        val view = createViewFromName(name!!, context, attrs)
-
+        var view = createViewFromName(name!!, context, attrs)
+        if (view == null) {
+            view = createView(name, context, attrs)
+        }
         //add attr in view
-        skinAttribute.loadAttr(context, view, attrs)
-        return view!!
+        skinAttribute.load(view, attrs)
+        return view
     }
 
     /**
      * create view
      */
     private fun createViewFromName(name: String, context: Context?, attrs: AttributeSet?): View? {
-        var view:View? = null
+        var view: View? = null
         mClassPrefixList.forEach {
-            view = createView(name, context, attrs)
-            if (view != null) return@forEach
+            view = createView(it + name, context, attrs)
+            if (view != null) return view
         }
         return view
     }
